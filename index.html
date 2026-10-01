@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Segesta in codice · Segesta in code</title>
+<meta name="description" content="Laboratorio di coding con Tinkercad Codeblocks per la EU Code Week · A coding lab with Tinkercad Codeblocks for EU Code Week">
+<style>
+@font-face{font-family:Fredoka;font-weight:600;src:url(assets/fonts/fredoka-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:Fredoka;font-weight:700;src:url(assets/fonts/fredoka-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:Nunito;font-weight:600;src:url(assets/fonts/nunito-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:Nunito;font-weight:800;src:url(assets/fonts/nunito-latin-800-normal.woff2) format('woff2')}
+:root{--navy:#1E2A44;--ink:#2B3550;--muted:#5D667A;--cream:#F6F3EC;--card:#FDFCF8;--line:#E2DACB;--orange:#E8902E;--orange-ink:#8A4A0C;--blue:#2D6CB5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font:600 17px/1.55 Nunito,"Segoe UI",Arial,sans-serif}
+a{color:var(--blue)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+header{background:var(--navy);color:var(--cream)}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:56px 0}
+.eyebrow{font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:13px;color:#F2A65A;margin:0 0 12px}
+h1{font-family:Fredoka,Nunito,sans-serif;font-weight:700;font-size:clamp(40px,7vw,68px);line-height:1.02;margin:0 0 6px;text-wrap:balance}
+h1 span{display:block;font-size:.55em;color:#D6DEEA;font-weight:600}
+.lead{color:#D6DEEA;font-size:18px;max-width:34em;margin:18px 0 0}
+.hero img{width:100%;max-width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:20px;display:block}
+main{padding:48px 0 24px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card h2{font-family:Fredoka,Nunito,sans-serif;font-weight:600;font-size:28px;line-height:1.15;color:var(--navy);margin:0}
+.lang{display:inline-block;align-self:flex-start;background:var(--navy);color:var(--cream);font-weight:800;font-size:12px;letter-spacing:.1em;padding:4px 10px;border-radius:999px}
+.card p{margin:0;color:var(--muted)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:auto;padding-top:8px}
+.btn{display:inline-block;padding:11px 18px;border-radius:12px;font-weight:800;text-decoration:none;border:2px solid var(--navy)}
+.btn.primary{background:var(--orange);border-color:var(--orange);color:var(--navy)}
+.btn.ghost{color:var(--navy);background:transparent}
+.btn:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:40px 0 0;padding:0;list-style:none}
+.facts li{border-top:6px solid var(--blue);padding-top:12px}
+.facts b{display:block;font-family:Fredoka,Nunito,sans-serif;font-size:26px;color:var(--navy)}
+.facts span{color:var(--muted);font-size:15px}
+footer{border-top:2px solid var(--line);margin-top:48px;padding:24px 0 40px;color:var(--muted);font-size:14px}
+footer p{margin:0 0 8px}
+@media (max-width:760px){.hero{grid-template-columns:1fr;padding:36px 0;gap:24px}.cards{grid-template-columns:1fr}.facts{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap hero">
+    <div>
+      <p class="eyebrow">EU Code Week · CodeWeek4All</p>
+      <h1>Segesta in codice <span lang="en">Segesta in code</span></h1>
+      <p class="lead">Un laboratorio di 75 minuti con Tinkercad Codeblocks: a squadre, gli alunni di 11–14 anni costruiscono in 3D la facciata del tempio dorico di Segesta. Un ciclo crea le colonne, quattro variabili cambiano il modello.</p>
+      <p class="lead" lang="en">A 75-minute lab with Tinkercad Codeblocks: in teams, students aged 11–14 build a 3D model of the façade of the Doric temple of Segesta. A loop builds the columns, four variables change the model.</p>
+    </div>
+    <img src="assets/tempio-segesta.jpg" alt="Il tempio dorico di Segesta, in Sicilia · The Doric temple of Segesta, Sicily" width="597" height="335">
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="cards">
+    <section class="card" lang="it" aria-labelledby="it-title">
+      <span class="lang">ITALIANO</span>
+      <h2 id="it-title">Presentazione per la classe</h2>
+      <p>15 slide da proiettare: la missione, la plancia di Codeblocks, coordinate e variabili, i quattro livelli di costruzione, la caccia al bug e l’exit ticket.</p>
+      <div class="actions">
+        <a class="btn primary" href="presentazione-classe-IT.html">Apri la presentazione</a>
+        <a class="btn ghost" href="[LINK-RELEASES]">Scarica il PDF</a>
+      </div>
+    </section>
+    <section class="card" lang="en" aria-labelledby="en-title">
+      <span class="lang">ENGLISH</span>
+      <h2 id="en-title">Classroom presentation</h2>
+      <p>15 slides to project: the mission, the Codeblocks workspace, coordinates and variables, the four building levels, the bug hunt and the exit ticket.</p>
+      <div class="actions">
+        <a class="btn primary" href="presentazione-classe-EN.html">Open the presentation</a>
+        <a class="btn ghost" href="[LINK-RELEASES]">Download the PDF</a>
+      </div>
+    </section>
+  </div>
+
+  <ul class="facts" aria-label="Il laboratorio in breve · The lab at a glance">
+    <li><b>75'</b><span>durata · length</span></li>
+    <li><b>11–14</b><span>anni · years old</span></li>
+    <li><b>2–3</b><span>alunni per computer · students per computer</span></li>
+    <li><b>15</b><span>slide · slides</span></li>
+  </ul>
+</main>
+
+<footer class="wrap">
+  <p>IC “Francesco Vivona”, Calatafimi Segesta (TP), Italia · prof. Livio Di Franco, Animatore Digitale · [EMAIL-REFERENTE]</p>
+  <p>Materiali per la <a href="https://codeweek.eu/">EU Code Week</a> e per la sfida <a href="https://codeweek.eu/codeweek4all">CodeWeek4All</a>. Licenza: [LICENZA DA CONFERMARE] · Foto del tempio: [FONTE E LICENZA DA VERIFICARE] · Caratteri Fredoka e Nunito, SIL Open Font License 1.1.</p>
+  <p>Le slide sono pensate per il computer o il proiettore · Slides are designed for a computer screen or a projector.</p>
+</footer>
+</body>
+</html>

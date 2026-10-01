@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Segesta in codice</title>
+<style>
+@font-face{font-family:Fredoka;font-weight:600;src:url(assets/fonts/fredoka-latin-600-normal.woff2) format('woff2');}
+@font-face{font-family:Fredoka;font-weight:700;src:url(assets/fonts/fredoka-latin-700-normal.woff2) format('woff2');}
+@font-face{font-family:Nunito;font-weight:600;src:url(assets/fonts/nunito-latin-600-normal.woff2) format('woff2');}
+@font-face{font-family:Nunito;font-weight:700;src:url(assets/fonts/nunito-latin-700-normal.woff2) format('woff2');}
+@font-face{font-family:Nunito;font-weight:800;src:url(assets/fonts/nunito-latin-800-normal.woff2) format('woff2');}
+@font-face{font-family:Nunito;font-weight:900;src:url(assets/fonts/nunito-latin-900-normal.woff2) format('woff2');}
+@page{size:1280px 720px;margin:0}
+:root{
+  --ink:#1C2840;--muted:#4A5568;--soft:#8C96A8;
+  --forme:#4A86E8;--modifica:#9966E0;--controlla:#EF9A2A;--matematica:#43A047;--variabili:#3FA7D6;--modelli:#1E56C8;--revisione:#5A6375;
+  --ws:#3B4357;--pal:#4B5469;--sel:#12B5E5;--sun:#FFD447;--sunsh:#E2B320;
+  --dent:#3B4357;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#7d8597}
+.slide{position:relative;width:1280px;height:720px;overflow:hidden;background:#fff;font-family:Nunito,sans-serif;color:var(--ink);page-break-after:always;break-after:page}
+.grid{background-color:#fff;background-image:linear-gradient(#EDF3FB 1.5px,transparent 1.5px),linear-gradient(90deg,#EDF3FB 1.5px,transparent 1.5px);background-size:40px 40px;background-position:-1px -1px}
+.dark{background-color:#1C2840;background-image:linear-gradient(rgba(255,255,255,.045) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(255,255,255,.045) 1.5px,transparent 1.5px);background-size:40px 40px;color:#fff;--dent:#1C2840}
+.abs{position:absolute}
+.tags{position:absolute;left:60px;top:34px;display:flex;gap:10px}
+.tag{font:800 14px Nunito;letter-spacing:.08em;text-transform:uppercase;padding:6px 13px;border-radius:999px;background:var(--ink);color:#fff}
+.tag.lvl{background:var(--sun);color:var(--ink)}
+.tag.out{background:transparent;border:2px solid rgba(255,255,255,.45);color:#fff;padding:4px 12px}
+h1{position:absolute;left:60px;top:70px;margin:0;font:600 50px/1.08 Fredoka;color:var(--ink);letter-spacing:-.005em}
+.sub{position:absolute;left:60px;top:134px;width:1010px;font:700 21px/1.38 Nunito;color:var(--muted)}
+.prog{position:absolute;right:52px;top:26px}
+.pg{position:absolute;right:38px;bottom:20px;font:800 14px Nunito;color:var(--soft)}
+.dark .pg{color:rgba(255,255,255,.5)}
+
+/* bubble domanda */
+.q{position:absolute;background:var(--sun);border-radius:20px;padding:13px 20px 14px 70px;font:800 21px/1.3 Nunito;color:var(--ink);box-shadow:0 5px 0 var(--sunsh)}
+.q .qi{position:absolute;left:16px;top:50%;margin-top:-20px;width:40px;height:40px;border-radius:50%;background:var(--ink);color:var(--sun);font:700 26px/40px Fredoka;text-align:center}
+.q .ql{display:block;font:900 12.5px Nunito;letter-spacing:.12em;text-transform:uppercase;opacity:.75;margin-bottom:2px}
+/* trucco */
+.tip{position:absolute;background:#F2ECFF;border:2px solid #D3C2F8;border-radius:18px;padding:12px 18px 12px 64px;font:700 19px/1.32 Nunito;color:#3A276E}
+.tip .ti{position:absolute;left:14px;top:50%;margin-top:-19px;width:38px;height:38px}
+.tip .tl{display:block;font:900 12.5px Nunito;letter-spacing:.12em;text-transform:uppercase;color:#7A5BC7;margin-bottom:1px}
+.fact{background:#E5F6EC;border-color:#A8DCBA;color:#1E5C36}
+.fact .tl{color:#2E8B57}
+
+/* area di lavoro */
+.ws{position:absolute;background:var(--ws);border-radius:18px;padding:18px 22px 22px;--dent:var(--ws);box-shadow:0 8px 0 rgba(28,40,64,.14)}
+.wsl{font:900 12px Nunito;letter-spacing:.14em;text-transform:uppercase;color:#A3AFC6;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.wsl i{display:inline-block;width:12px;height:12px;border-radius:50%}
+.cmt{font:800 14px Nunito;letter-spacing:.06em;text-transform:uppercase;color:#FFD447;margin:14px 0 8px}
+.cmt:first-child{margin-top:0}
+
+/* blocchi */
+.stack{display:flex;flex-direction:column;align-items:flex-start}
+.row{display:flex;align-items:center}
+.blk{position:relative;display:inline-flex;align-items:center;gap:7px;height:44px;padding:0 13px;border-radius:6px;color:#fff;font:800 18px Nunito;white-space:nowrap;box-shadow:inset 0 -2px 0 rgba(0,0,0,.14)}
+.blk::before{content:'';position:absolute;top:0;left:16px;width:24px;height:7px;background:var(--dent);border-radius:0 0 6px 6px;z-index:1}
+.blk::after{content:'';position:absolute;bottom:-7px;left:16px;width:24px;height:7px;background:inherit;border-radius:0 0 6px 6px;z-index:2}
+.blk.notab::after{display:none}
+.forme{background:var(--forme)}.modifica{background:var(--modifica)}.controlla{background:var(--controlla)}.variabili{background:var(--variabili)}.matematica{background:var(--matematica)}
+.blk.sel{outline:3px solid #FFD447;outline-offset:2px}
+.chip{display:inline-block;background:#fff;color:#1D3D7A;border-radius:14px;padding:2px 10px;min-width:24px;text-align:center;font:800 17px/1.25 Nunito}
+.chip.qq{color:#D2462E}
+.lab{font-weight:800}
+.vr{display:inline-block;background:var(--variabili);color:#fff;border:2px solid rgba(255,255,255,.75);border-radius:14px;padding:0 10px;font:800 17px/1.35 Nunito}
+.mr{display:inline-flex;align-items:center;gap:5px;background:var(--matematica);border:2px solid rgba(255,255,255,.4);border-radius:16px;padding:2px 6px;font:800 17px Nunito}
+.dd{display:inline-flex;align-items:center;gap:7px;background:rgba(0,0,0,.16);border-radius:12px;padding:1px 10px;font:800 18px Nunito}
+.tri{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid #fff}
+.sw{display:inline-block;width:22px;height:22px;border-radius:50%;background:#BAC4F2;border:2px solid #fff}
+.ho{display:inline-block;width:22px;height:22px;border-radius:50%;background:repeating-linear-gradient(45deg,#97A0B3 0 3px,#E4E8F0 3px 6px);border:2px solid #fff}
+.chev{font:800 22px/1 Nunito;opacity:.85;margin:0 1px}
+.ico{display:inline-block;width:26px;height:26px}
+.ann{display:inline-flex;align-items:center;font:800 15px Nunito;color:#C9D2E3;margin-left:14px;white-space:nowrap}
+.ann::before{content:'';display:inline-block;width:20px;border-top:2px dashed #8C98AF;margin-right:8px}
+.ph{display:inline-flex;align-items:center;height:44px;padding:0 14px;border:2px dashed #8C98AF;border-radius:6px;color:#D5DCEA;font:800 16px Nunito;white-space:nowrap;margin:2px 0}
+/* blocco a C */
+.cb{display:flex;flex-direction:column;align-items:flex-start}
+.cb .hd{border-bottom-left-radius:0}
+.cb .hd::after{left:36px}
+.cb .bd{display:flex;align-items:stretch}
+.cb .arm{width:20px;background:var(--controlla)}
+.cb .in{display:flex;flex-direction:column;align-items:flex-start;padding:0 0 6px}
+.cb .ft{position:relative;width:170px;height:22px;background:var(--controlla);border-radius:0 0 6px 6px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.14)}
+.cb .ft::after{content:'';position:absolute;bottom:-7px;left:16px;width:24px;height:7px;background:var(--controlla);border-radius:0 0 6px 6px}
+
+.card{position:absolute;background:#fff;border:2px solid #DCE4EF;border-radius:22px;box-shadow:0 6px 0 rgba(28,40,64,.07)}
+.big{font:600 40px/1 Fredoka}
+.lbl{font:900 13px Nunito;letter-spacing:.12em;text-transform:uppercase;color:var(--soft)}
+.axis{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:12px;color:#fff;font:700 26px Fredoka}
+.num{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--sun);color:var(--ink);font:700 20px Fredoka;box-shadow:0 3px 0 var(--sunsh)}
+</style>
+</head>
+<body>
+<div id="deck"></div>
+<script>
+const COL={forme:'#4A86E8',modifica:'#9966E0',controlla:'#EF9A2A',matematica:'#43A047',variabili:'#3FA7D6',modelli:'#1E56C8',revisione:'#5A6375',sel:'#12B5E5'};
+const STONE={front:'#DCC49A',top:'#EFE0BF',side:'#BE9C67',line:'#7E6040'};
+
+/* ---------- icone forme ---------- */
+function icon(t){
+  if(t==='cubo') return `<svg class="ico" viewBox="0 0 26 26"><path d="M13 2 L24 7 L24 19 L13 24 L2 19 L2 7Z" fill="#B71C1C"/><path d="M13 2 L24 7 L13 12 L2 7Z" fill="#EF5350"/><path d="M13 12 L24 7 L24 19 L13 24Z" fill="#C62828"/><path d="M2 7 L13 12 L13 24 L2 19Z" fill="#E53935"/></svg>`;
+  if(t==='cilindro') return `<svg class="ico" viewBox="0 0 26 26"><path d="M4 6 V20 A9 4 0 0 0 22 20 V6Z" fill="#E67E22"/><ellipse cx="13" cy="6" rx="9" ry="4" fill="#F6B26B"/></svg>`;
+  if(t==='tetto') return `<svg class="ico" viewBox="0 0 26 26"><path d="M2 21 L10 6 L24 10 L17 23Z" fill="#2E7D32"/><path d="M2 21 L10 6 L17 23Z" fill="#66BB6A"/></svg>`;
+  if(t==='sfera') return `<svg class="ico" viewBox="0 0 26 26"><circle cx="13" cy="13" r="11" fill="#1E88E5"/><circle cx="9.5" cy="9.5" r="4" fill="#64B5F6"/></svg>`;
+  if(t==='cono') return `<svg class="ico" viewBox="0 0 26 26"><path d="M13 2 L22 21 A9 3.5 0 0 1 4 21Z" fill="#7B3FA0"/><path d="M13 2 L13 24.5 A9 3.5 0 0 1 4 21Z" fill="#9C5BC4"/></svg>`;
+  return '';
+}
+const chip=(v,cls='')=>`<span class="chip ${cls}">${v}</span>`;
+const lab=t=>`<span class="lab">${t}</span>`;
+const vr=n=>`<span class="vr">${n}</span>`;
+const mr=s=>`<span class="mr">${s}</span>`;
+const dd=n=>`<span class="dd">${n}<span class="tri"></span></span>`;
+const opts=`<span class="sw"></span><span class="ho"></span><span class="chev">&lsaquo;</span>`;
+function add(shape,params,o={}){return `<div class="blk forme ${o.sel?'sel':''}" style="${o.st||''}">Aggiungi ${icon(shape)}${opts} ${params}</div>`}
+function box(p,l,a){return lab('P')+chip(p,p==='?'?'qq':'')+lab('L')+chip(l,l==='?'?'qq':'')+lab('A')+chip(a,a==='?'?'qq':'')}
+function cyl(r,a){return lab('R')+(typeof r==='string'&&r.startsWith('<')?r:chip(r,r==='?'?'qq':''))+lab('A')+(typeof a==='string'&&a.startsWith('<')?a:chip(a,a==='?'?'qq':''))}
+const val=v=>(typeof v==='string'&&v.startsWith('<'))?v:chip(v,v==='?'?'qq':'');
+function move(x,y,z,o={}){return `<div class="blk modifica ${o.sel?'sel':''}">Sposta ${lab('X')}${val(x)}${lab('Y')}${val(y)}${lab('Z')}${val(z)}</div>`}
+function scale(x,y,z){return `<div class="blk modifica">Scala ${lab('X')}${val(x)}${lab('Y')}${val(y)}${lab('Z')}${val(z)}</div>`}
+function setv(n,v,o={}){return `<div class="blk variabili ${o.sel?'sel':''}">imposta ${dd(n)} a ${val(v)}</div>`}
+function chg(n,v,o={}){return `<div class="blk variabili ${o.sel?'sel':''}">cambia ${dd(n)} di ${val(v)}</div>`}
+function rep(n,inner){return `<div class="cb"><div class="blk controlla hd">ripeti ${val(n)} volte</div><div class="bd"><div class="arm"></div><div class="in">${inner}</div></div><div class="ft"></div></div>`}
+const ann=(b,t)=>`<div class="row">${b}<span class="ann">${t}</span></div>`;
+
+/* ---------- proiezione obliqua ---------- */
+function P(X,Y,Z,v){return [v.ox+v.s*(X+v.kx*Y), v.oy-v.s*(Z+v.ky*Y)]}
+const pts=a=>a.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+function face(points,fill,v,sel){
+  let s='';
+  if(sel) s+=`<polygon points="${pts(points)}" fill="none" stroke="${COL.sel}" stroke-opacity=".35" stroke-width="9" stroke-linejoin="round"/>`;
+  s+=`<polygon points="${pts(points)}" fill="${fill}" stroke="${sel?COL.sel:(v.line||STONE.line)}" stroke-width="${sel?2.6:1.2}" stroke-linejoin="round"/>`;
+  return s;
+}
+function pal(p){return p.col?{front:p.col.front,top:p.col.top,side:p.col.side}:STONE}
+function drawBox(p,v){
+  const [cx,cy,cz]=p.c,[w,d,h]=p.d;const x1=cx-w/2,x2=cx+w/2,y1=cy-d/2,y2=cy+d/2,z1=cz-h/2,z2=cz+h/2;const c=pal(p);
+  let s='';
+  if(p.ghost){
+    // parte sotto il piano: tratteggiata
+  }
+  s+=face([P(x1,y1,z2,v),P(x2,y1,z2,v),P(x2,y2,z2,v),P(x1,y2,z2,v)],c.top,v,p.sel);
+  s+=face([P(x2,y1,z1,v),P(x2,y2,z1,v),P(x2,y2,z2,v),P(x2,y1,z2,v)],c.side,v,p.sel);
+  s+=face([P(x1,y1,z1,v),P(x2,y1,z1,v),P(x2,y1,z2,v),P(x1,y1,z2,v)],c.front,v,p.sel);
+  return s;
+}
+function drawCyl(p,v){
+  const [cx,cy]=p.c,r=p.r,z1=p.z1,z2=p.z2;const c=pal(p);
+  const TL=P(cx-r,cy,z2,v),TR=P(cx+r,cy,z2,v),BL=P(cx-r,cy,z1,v),BR=P(cx+r,cy,z1,v);const T=P(cx,cy,z2,v);
+  const rx=r*v.s,ry=Math.max(1.5,r*v.s*0.36);
+  const stroke=p.sel?COL.sel:(v.line||STONE.line),sw=p.sel?2.6:1.2;
+  let s='';
+  const body=`M${TL[0].toFixed(1)},${TL[1].toFixed(1)} L${BL[0].toFixed(1)},${BL[1].toFixed(1)} A${rx.toFixed(1)},${ry.toFixed(1)} 0 0 0 ${BR[0].toFixed(1)},${BR[1].toFixed(1)} L${TR[0].toFixed(1)},${TR[1].toFixed(1)} Z`;
+  if(p.sel) s+=`<path d="${body}" fill="none" stroke="${COL.sel}" stroke-opacity=".35" stroke-width="9"/>`;
+  s+=`<path d="${body}" fill="${c.front}" stroke="${stroke}" stroke-width="${sw}"/>`;
+  s+=`<path d="M${(TL[0]+rx*0.5).toFixed(1)},${(TL[1]+ry).toFixed(1)} L${(BL[0]+rx*0.5).toFixed(1)},${(BL[1]+ry*0.9).toFixed(1)}" stroke="#fff" stroke-opacity=".35" stroke-width="${Math.max(1.5,rx*0.35).toFixed(1)}"/>`;
+  s+=`<ellipse cx="${T[0].toFixed(1)}" cy="${T[1].toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="${c.top}" stroke="${stroke}" stroke-width="${sw}"/>`;
+  return s;
+}
+function drawRoof(p,v){
+  const [cx,cy]=p.c,w=p.w,d=p.dp,z1=p.z1,z2=p.z2;const x1=cx-w/2,x2=cx+w/2,y1=cy-d/2,y2=cy+d/2;const c=pal(p);
+  let s='';
+  s+=face([P(x1,y1,z1,v),P(cx,y1,z2,v),P(cx,y2,z2,v),P(x1,y2,z1,v)],c.top,v,p.sel);
+  s+=face([P(cx,y1,z2,v),P(x2,y1,z1,v),P(x2,y2,z1,v),P(cx,y2,z2,v)],c.side,v,p.sel);
+  s+=face([P(x1,y1,z1,v),P(x2,y1,z1,v),P(cx,y1,z2,v)],c.front,v,p.sel);
+  return s;
+}
+function draw(parts,v){return parts.map(p=>p.t==='box'?drawBox(p,v):p.t==='cyl'?drawCyl(p,v):drawRoof(p,v)).join('')}
+
+/* modello del tempio (misure in mm, coerenti con la presentazione originale) */
+function temple(o={}){
+  const H=o.H??30,N=o.N??6,Pp=o.P??16,x0=o.x0??-40,stage=o.stage??4,sel=o.sel||'',lift=o.lift||0,same=o.same||false,colCol=o.colCol;
+  const parts=[];
+  if(stage>=1){
+    parts.push({t:'box',c:[0,0,2],d:[112,40,4],sel:sel==='g1'});
+    parts.push({t:'box',c:[0,0,5.5],d:[104,32,3],sel:sel==='g2'});
+    parts.push({t:'box',c:[0,0,8.5],d:[96,24,3],sel:sel==='g3'});
+  }
+  if(stage>=2){
+    const n=o.cols??N;
+    for(let i=0;i<n;i++){
+      const X=same?x0:x0+i*Pp,b=10+lift;const s=(sel==='col'&&(o.selIdx===undefined||o.selIdx===i));
+      parts.push({t:'cyl',c:[X,0],r:4,z1:b,z2:b+H,sel:s,col:colCol});
+      if(!o.noCap){
+        parts.push({t:'cyl',c:[X,0],r:5.5,z1:b+H,z2:b+H+2,sel:s,col:colCol});
+        parts.push({t:'box',c:[X,0,b+H+3],d:[12,12,2],sel:s,col:colCol});
+      }
+    }
+  }
+  if(stage>=3){
+    parts.push({t:'box',c:[0,0,H+16.5],d:[96,16,5],sel:sel==='trab'});
+    parts.push({t:'box',c:[0,0,H+21.5],d:[102,20,5],sel:sel==='trab'});
+  }
+  if(stage>=4){
+    parts.push({t:'roof',c:[0,0],w:102,dp:16,z1:H+24,z2:H+36,sel:sel==='fr'});
+  }
+  return parts;
+}
+
+/* piano di lavoro */
+function plane(v,xr,yr,step=10){
+  let s=`<polygon points="${pts([P(-xr,-yr,0,v),P(xr,-yr,0,v),P(xr,yr,0,v),P(-xr,yr,0,v)])}" fill="#EAF3FD" stroke="#8FC0EE" stroke-width="1.5"/>`;
+  for(let x=-xr+step;x<xr;x+=step){const a=P(x,-yr,0,v),b=P(x,yr,0,v);s+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${x%50===0?'#B5D4F3':'#D3E5F8'}" stroke-width="1"/>`}
+  for(let y=-yr+step;y<yr;y+=step){const a=P(-xr,y,0,v),b=P(xr,y,0,v);s+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${y%50===0?'#B5D4F3':'#D3E5F8'}" stroke-width="1"/>`}
+  return s;
+}
+function viewcube(x,y){
+  return `<g transform="translate(${x},${y}) scale(1.55)" font-family="Nunito" font-weight="800" font-size="4.7" fill="#8A93A6" text-anchor="middle">
+  <path d="M0,10 L22,0 L44,10 L22,20Z" fill="#F7F8FA" stroke="#C9CFDA"/>
+  <path d="M0,10 L22,20 L22,46 L0,36Z" fill="#EEF0F4" stroke="#C9CFDA"/>
+  <path d="M22,20 L44,10 L44,36 L22,46Z" fill="#E3E6EC" stroke="#C9CFDA"/>
+  <text x="22" y="12.5">ALTO</text><text x="11" y="30">FRONTE</text><text x="33" y="30">DESTRA</text></g>`;
+}
+function vbtn(x,y,kind){
+  let ic='';
+  if(kind==='home') ic=`<path d="M-7,1 L0,-6 L7,1 M-5,0 V7 H5 V0" fill="none" stroke="#1C2840" stroke-width="2" stroke-linejoin="round"/>`;
+  if(kind==='plus') ic=`<path d="M-6,0 H6 M0,-6 V6" stroke="#1C2840" stroke-width="2.2"/>`;
+  if(kind==='minus') ic=`<path d="M-6,0 H6" stroke="#1C2840" stroke-width="2.2"/>`;
+  if(kind==='fit') ic=`<path d="M0,-5 L5,0 L0,5 L-5,0Z" fill="none" stroke="#1C2840" stroke-width="2"/>`;
+  if(kind==='full') ic=`<path d="M-6,-2 V-6 H-2 M2,-6 H6 V-2 M6,2 V6 H2 M-2,6 H-6 V2" fill="none" stroke="#1C2840" stroke-width="2"/>`;
+  return `<g transform="translate(${x},${y})"><circle r="14" fill="#fff" stroke="#D3DAE5" stroke-width="1.5"/>${ic}</g>`;
+}
+function axes(v,len=[70,55,80]){
+  const o=P(0,0,0,v),X=P(len[0],0,0,v),Y=P(0,len[1],0,v),Z=P(0,0,len[2],v);
+  const ar=(a,b,c,t)=>{const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L;const h1=[b[0]-ux*14-uy*7,b[1]-uy*14+ux*7],h2=[b[0]-ux*14+uy*7,b[1]-uy*14-ux*7];
+    return `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]-ux*6}" y2="${b[1]-uy*6}" stroke="#fff" stroke-width="8" stroke-linecap="round"/><line x1="${a[0]}" y1="${a[1]}" x2="${b[0]-ux*6}" y2="${b[1]-uy*6}" stroke="${c}" stroke-width="4" stroke-linecap="round"/><polygon points="${pts([b,h1,h2])}" fill="${c}"/><text x="${b[0]+ux*20}" y="${b[1]+uy*20+9}" font-family="Fredoka" font-weight="700" font-size="28" fill="${c}" text-anchor="middle">${t}</text>`};
+  return ar(o,X,'#D93A2B','X')+ar(o,Y,'#2E9E4F','Y')+ar(o,Z,'#2F6FD6','Z')+`<circle cx="${o[0]}" cy="${o[1]}" r="6" fill="#1C2840" stroke="#fff" stroke-width="2"/>`;
+}
+/* finestra anteprima 3D in stile Codeblocks */
+function viewer(o){
+  const v={s:o.s,ox:o.ox,oy:o.oy,kx:o.kx??0.55,ky:o.ky??0.32};
+  let s=`<svg width="${o.w}" height="${o.h}" viewBox="0 0 ${o.w} ${o.h}" xmlns="http://www.w3.org/2000/svg">`;
+  const cid='c'+Math.random().toString(36).slice(2,8);
+  s+=`<defs><clipPath id="${cid}"><rect x="2" y="2" width="${o.w-4}" height="${o.h-4}" rx="13"/></clipPath></defs>`;
+  s+=`<rect x="1" y="1" width="${o.w-2}" height="${o.h-2}" rx="14" fill="#FAFCFF"/>`;
+  s+=`<g clip-path="url(#${cid})">`+plane(v,o.xr||100,o.yr||60)+`</g>`;
+  if(o.plabel!==false){const a=P((o.xr||100)-4,-(o.yr||60)+2,0,v);s+=`<text x="${a[0]-6}" y="${a[1]-6}" font-family="Nunito" font-weight="800" font-size="11" fill="#7FAEDF" text-anchor="end">Piano di lavoro</text>`}
+  s+=draw(o.parts||[],v);
+  if(o.extra) s+=o.extra(v);
+  if(o.axes) s+=axes(v,o.axes===true?undefined:o.axes);
+  if(o.cube!==false) s+=viewcube(16,14);
+  s+=`<rect x="1" y="1" width="${o.w-2}" height="${o.h-2}" rx="14" fill="none" stroke="#CBD6E4" stroke-width="2"/>`;
+  if(o.btns!==false){s+=vbtn(30,112,'home')+vbtn(30,146,'fit')+vbtn(30,180,'plus')+vbtn(30,214,'minus');s+=vbtn(o.w-26,26,'full')}
+  s+='</svg>';return s;
+}
+/* disegno libero senza cornice */
+function scene(o){
+  const v={s:o.s,ox:o.ox,oy:o.oy,kx:o.kx??0.55,ky:o.ky??0.32};
+  let s=`<svg width="${o.w}" height="${o.h}" viewBox="0 0 ${o.w} ${o.h}" xmlns="http://www.w3.org/2000/svg" font-family="Nunito">`;
+  if(o.ground){const a=P(-o.ground,0,0,v),b=P(o.ground,0,0,v);s+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#B9C6D8" stroke-width="2"/>`}
+  s+=draw(o.parts||[],v);
+  if(o.extra) s+=o.extra(v);
+  s+='</svg>';return s;
+}
+
+/* comandi di esecuzione */
+function ctrl(kind,size=46,active=false){
+  const r=size/2;let ic='';
+  if(kind==='step') ic=`<path d="M-6,-8 L5,0 L-6,8Z" fill="none" stroke="#1C2840" stroke-width="2.4" stroke-linejoin="round"/><path d="M-9,-8 V8" stroke="#1C2840" stroke-width="2.4"/>`;
+  if(kind==='play') ic=`<rect x="-6" y="-8" width="4.5" height="16" rx="1.5" fill="#fff"/><rect x="1.5" y="-8" width="4.5" height="16" rx="1.5" fill="#fff"/>`;
+  if(kind==='fast') ic=`<path d="M2,-10 L-6,2 H0 L-2,10 L6,-2 H0Z" fill="none" stroke="#1C2840" stroke-width="2.2" stroke-linejoin="round"/>`;
+  if(kind==='reset') ic=`<path d="M7,1 A7,7 0 1 1 3,-6" fill="none" stroke="#1C2840" stroke-width="2.4"/><path d="M0,-11 L5,-6 L-1,-3Z" fill="#1C2840"/>`;
+  const bg=kind==='play'?'#3F7BE0':'#fff';
+  return `<svg width="${size}" height="${size}" viewBox="${-r} ${-r} ${size} ${size}"><circle r="${r-2}" fill="${bg}" stroke="${kind==='play'?'#2E63C0':'#D3DAE5'}" stroke-width="2"/><g transform="scale(${size/46})">${ic}</g></svg>`;
+}
+function rbtn(kind){
+  let ic='';
+  if(kind==='undo') ic=`<path d="M-7,-1 L-2,-6 M-7,-1 L-2,4 M-7,-1 H4 A5,5 0 0 1 4,9" fill="none" stroke="#1C2840" stroke-width="2.2" stroke-linecap="round"/>`;
+  if(kind==='redo') ic=`<path d="M7,-1 L2,-6 M7,-1 L2,4 M7,-1 H-4 A5,5 0 0 0 -4,9" fill="none" stroke="#1C2840" stroke-width="2.2" stroke-linecap="round"/>`;
+  if(kind==='plus') ic=`<path d="M-6,0 H6 M0,-6 V6" stroke="#1C2840" stroke-width="2.2"/>`;
+  if(kind==='minus') ic=`<path d="M-6,0 H6" stroke="#1C2840" stroke-width="2.2"/>`;
+  if(kind==='eq') ic=`<path d="M-6,-3 H6 M-6,3 H6" stroke="#1C2840" stroke-width="2.2"/>`;
+  return `<svg width="36" height="36" viewBox="-18 -18 36 36"><circle r="16" fill="#fff" stroke="#D3DAE5" stroke-width="1.5"/>${ic}</svg>`;
+}
+
+/* icone */
+const BULB=`<svg class="ti" viewBox="0 0 38 38"><circle cx="19" cy="19" r="19" fill="#7A5BC7"/><path d="M19 9a7 7 0 0 0-4 12.7V25h8v-3.3A7 7 0 0 0 19 9z" fill="#FFD447"/><rect x="15.5" y="26.5" width="7" height="3" rx="1.5" fill="#fff"/></svg>`;
+const STAR=`<svg class="ti" viewBox="0 0 38 38"><circle cx="19" cy="19" r="19" fill="#2E8B57"/><path d="M19 8l3.2 6.6 7.2 1-5.2 5 1.3 7.2L19 24.4l-6.5 3.4 1.3-7.2-5.2-5 7.2-1z" fill="#fff"/></svg>`;
+const BUG=(c='#D2462E')=>`<svg width="44" height="44" viewBox="0 0 44 44"><circle cx="22" cy="22" r="22" fill="${c}"/><ellipse cx="22" cy="25" rx="9" ry="11" fill="#fff"/><circle cx="22" cy="12" r="5" fill="#fff"/><path d="M22 15v21" stroke="${c}" stroke-width="2"/><path d="M13 20l-5-3M13 26h-6M13 32l-5 3M31 20l5-3M31 26h6M31 32l5 3M19 8l-3-4M25 8l3-4" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="18" cy="23" r="2" fill="${c}"/><circle cx="26" cy="29" r="2" fill="${c}"/></svg>`;
+function q(x,y,w,label,text,h){return `<div class="q" style="left:${x}px;top:${y}px;width:${w}px;${h?'min-height:'+h+'px':''}"><span class="qi">?</span><span class="ql">${label}</span>${text}</div>`}
+function tip(x,y,w,label,text,cls='',ic=BULB){return `<div class="tip ${cls}" style="left:${x}px;top:${y}px;width:${w}px">${ic}<span class="tl">${label}</span>${text}</div>`}
+
+/* indicatore di avanzamento: il tempio si costruisce livello dopo livello */
+function prog(state){ // state: array di 4 valori 'done' | 'now' | 'todo'
+  const f=s=>s==='done'?'#E2C893':s==='now'?'#FFD447':'#fff';
+  const st=s=>s==='done'?'#8C6D45':s==='now'?'#C9930A':'#C3CBD8';
+  let g=`<rect x="6" y="56" width="132" height="8" rx="2" fill="${f(state[0])}" stroke="${st(state[0])}" stroke-width="1.5"/>`;
+  for(let i=0;i<6;i++) g+=`<rect x="${16+i*20.5}" y="28" width="9" height="27" rx="1.5" fill="${f(state[1])}" stroke="${st(state[1])}" stroke-width="1.5"/>`;
+  g+=`<rect x="10" y="19" width="124" height="8" rx="2" fill="${f(state[2])}" stroke="${st(state[2])}" stroke-width="1.5"/>`;
+  g+=`<path d="M10 17 L72 3 L134 17Z" fill="${f(state[3])}" stroke="${st(state[3])}" stroke-width="1.5" stroke-linejoin="round"/>`;
+  const lbl=state.every(s=>s==='done')?'Tempio completo':state.includes('now')?'Livello '+(state.indexOf('now')+1)+(state.filter(s=>s==='now').length>1?'–'+(state.lastIndexOf('now')+1):'')+' di 4':'Il tempio da costruire';
+  return `<div class="prog"><svg width="144" height="68" viewBox="0 0 144 68">${g}</svg><div style="font:900 11px Nunito;letter-spacing:.1em;text-transform:uppercase;color:#8C96A8;text-align:center;margin-top:2px">${lbl}</div></div>`;
+}
+function head(o){
+  return `<div class="tags">${(o.tags||[]).map(t=>`<span class="tag ${t[1]||''}">${t[0]}</span>`).join('')}</div><h1>${o.title}</h1>${o.sub?`<div class="sub" style="${o.subw?'width:'+o.subw+'px':''}">${o.sub}</div>`:''}${o.prog?prog(o.prog):''}`;
+}
+const T0=['todo','todo','todo','todo'];
+let N=0;const slides=[];
+function S(cls,html){N++;slides.push(`<section class="slide ${cls}">${html}<div class="pg">${N}</div></section>`)}
+
+/* ================= 1 · COPERTINA ================= */
+S('dark',`
+<div class="tags"><span class="tag lvl">EU Code Week 2026</span><span class="tag out">Tinkercad Codeblocks</span></div>
+<div class="abs" style="left:60px;top:104px;font:700 96px/0.98 Fredoka;color:#fff;letter-spacing:-.01em">Segesta<br><span style="color:#FFD447">in codice</span></div>
+<div class="abs" style="left:62px;top:322px;width:520px;font:700 26px/1.35 Nunito;color:#DCE4F2">Missione: costruire la facciata di un tempio greco con i blocchi di codice.</div>
+<div class="abs" style="left:62px;top:440px;display:flex;gap:10px">
+  <span class="tag out" style="font-size:15px">Laboratorio di 75 minuti</span><span class="tag out" style="font-size:15px">In squadra</span></div>
+<div class="abs" style="left:62px;top:612px;font:700 20px/1.35 Nunito;color:#AEB9CE">I.C. “Francesco Vivona”<br>Calatafimi Segesta</div>
+<div class="abs" style="left:640px;top:96px;transform:rotate(2.2deg);background:#fff;padding:12px 12px 46px;border-radius:10px;box-shadow:0 18px 40px rgba(0,0,0,.35)">
+  <img src="assets/tempio-segesta.jpg" style="display:block;width:560px;height:314px;object-fit:cover;border-radius:4px">
+  <div style="position:absolute;left:0;right:0;bottom:12px;text-align:center;font:600 20px Fredoka;color:#1C2840">Il tempio di Segesta: ha quasi 2500 anni!</div>
+</div>
+<div class="abs" style="left:610px;top:470px;transform:rotate(-2deg);--dent:#1C2840">
+  <div class="stack">${rep(6,add('cilindro',cyl(4,30))+move(vr('X'),0,25))}</div>
+</div>
+`);
+
+/* ================= 2 · CACCIA ALLE FORME ================= */
+{
+const ix=60,iy=196,iw=620,ih=348;
+const pts2=[['Frontone',.363,.111,222],['Capitelli',.39,.401,318],['Colonne',.359,.627,402],['Crepidoma',.278,.905,490]];
+let lines='';pts2.forEach(p=>{const x=ix+p[1]*iw,y=iy+p[2]*ih;lines+=`<line x1="${x}" y1="${y}" x2="712" y2="${p[3]+16}" stroke="#1C2840" stroke-width="2.5"/><circle cx="${x}" cy="${y}" r="7" fill="#FFD447" stroke="#1C2840" stroke-width="2.5"/>`});
+S('grid',head({tags:[['Missione Segesta'],['Riscaldamento','lvl']],title:'Caccia alle forme',sub:'Ogni monumento è fatto di forme semplici. Riesci a trovarle nel tempio?',prog:T0})+`
+<img class="abs" src="assets/tempio-segesta.jpg" style="left:${ix}px;top:${iy}px;width:${iw}px;height:${ih}px;object-fit:cover;border-radius:18px;box-shadow:0 8px 0 rgba(28,40,64,.12)">
+<svg class="abs" style="left:0;top:0" width="1280" height="720">${lines}</svg>
+${pts2.map(p=>`<div class="abs" style="left:722px;top:${p[3]}px;font:600 27px Fredoka;color:#1C2840">${p[0]}</div>`).join('')}
+<div class="abs" style="left:920px;top:196px;width:300px;background:var(--pal);border-radius:18px;padding:16px 18px;--dent:var(--pal)">
+  <div class="wsl" style="color:#DCE3F0"><i style="background:var(--forme)"></i>Forme · i blocchi che userai</div>
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <div class="blk forme notab" style="width:150px">${icon('cubo')} Cubo</div><div style="font:700 16px/1.25 Nunito;color:#DCE3F0;margin:-4px 0 4px">gradini, abaco, trabeazione</div>
+    <div class="blk forme notab" style="width:150px">${icon('cilindro')} Cilindro</div><div style="font:700 16px/1.25 Nunito;color:#DCE3F0;margin:-4px 0 4px">colonne ed echino</div>
+    <div class="blk forme notab" style="width:150px">${icon('tetto')} Tetto</div><div style="font:700 16px/1.25 Nunito;color:#DCE3F0;margin:-4px 0 0">frontone</div>
+    <div style="font:700 15px/1.35 Nunito;color:#AEB9CE;margin-top:8px;padding-top:12px;border-top:1px dashed #6F7A90">Trascina il blocco nell’area del programma, poi scegli le misure.</div>
+  </div>
+</div>
+${q(60,578,620,'Domanda','Quali forme geometriche riconosci? Cerca rettangoli, cerchi e triangoli.')}
+`);
+}
+
+/* ================= 3 · IL NOSTRO TEMPIO ================= */
+{
+const v={s:3.6,ox:880,oy:560,kx:0.55,ky:0.32};
+const extra=(v)=>{const a=P(-56,-20,0,v),b=P(56,-20,0,v);const y=a[1]+30;const c=P(56,20,0,v),d=P(56,20,66,v);
+ return `<g stroke="#1C2840" stroke-width="2" fill="#1C2840" font-family="Fredoka" font-weight="600" font-size="22">
+ <line x1="${a[0]}" y1="${y}" x2="${b[0]}" y2="${y}"/><line x1="${a[0]}" y1="${y-8}" x2="${a[0]}" y2="${y+8}"/><line x1="${b[0]}" y1="${y-8}" x2="${b[0]}" y2="${y+8}"/>
+ <text x="${(a[0]+b[0])/2}" y="${y+30}" text-anchor="middle" stroke="none" fill="#D93A2B">112 mm</text>
+ <line x1="${c[0]+30}" y1="${c[1]}" x2="${d[0]+30}" y2="${d[1]}"/><line x1="${c[0]+22}" y1="${c[1]}" x2="${c[0]+38}" y2="${c[1]}"/><line x1="${d[0]+22}" y1="${d[1]}" x2="${d[0]+38}" y2="${d[1]}"/>
+ <text x="${c[0]+44}" y="${(c[1]+d[1])/2+8}" stroke="none" fill="#2F6FD6">66 mm</text></g>`};
+S('grid',head({tags:[['Missione Segesta'],['Il progetto','lvl']],title:'Il nostro tempio',sub:'Una facciata stilizzata da costruire in 3D: tre gradini, sei colonne, la trabeazione e il frontone.',prog:T0})+`
+<div class="card" style="left:60px;top:196px;width:470px;height:372px;padding:20px 26px">
+  <div class="lbl">Scheda del modello</div>
+  <div style="display:flex;flex-direction:column;gap:14px;margin-top:14px">
+    <div class="row" style="gap:16px"><span class="axis" style="background:#D93A2B">X</span><div><div class="big">112 mm</div><div style="font:700 17px Nunito;color:var(--muted)">larghezza</div></div></div>
+    <div class="row" style="gap:16px"><span class="axis" style="background:#2E9E4F">Y</span><div><div class="big">40 mm</div><div style="font:700 17px Nunito;color:var(--muted)">profondità</div></div></div>
+    <div class="row" style="gap:16px"><span class="axis" style="background:#2F6FD6">Z</span><div><div class="big">66 mm</div><div style="font:700 17px Nunito;color:var(--muted)">altezza</div></div></div>
+  </div>
+  <div style="margin-top:16px;padding-top:14px;border-top:2px dashed #DCE4EF;font:700 17px/1.4 Nunito;color:var(--ink)"><b style="font-weight:900">Trabeazione</b> = la “trave” di pietra appoggiata sopra le colonne.</div>
+</div>
+<div class="abs" style="left:560px;top:176px">${scene({w:680,h:470,s:3.6,ox:300,oy:350,parts:temple({stage:4}),extra:(vv)=>extra(vv)})}</div>
+${tip(60,590,470,'Lo sapevi?','Il tempio vero ha 36 colonne. Noi costruiamo le 6 della facciata.','fact',STAR)}
+`);
+}
+
+/* ================= 4 · IL PIANO IN 4 LIVELLI ================= */
+{
+const lv=[['Crepidoma','i tre gradini di base',COL.forme,1],['Colonne','sei colonne con un ciclo',COL.controlla,2],['Trabeazione','la trave sopra le colonne',COL.modifica,3],['Frontone','il tetto triangolare',COL.matematica,4]];
+let cards='';
+lv.forEach((l,i)=>{const x=60+i*295;
+ cards+=`<div class="card" style="left:${x}px;top:206px;width:265px;height:300px;padding:18px 18px">
+  <div class="row" style="gap:10px"><span style="display:inline-flex;width:40px;height:40px;border-radius:50%;background:${l[2]};color:#fff;font:700 24px/40px Fredoka;justify-content:center">${l[3]}</span><span class="lbl">Livello ${l[3]}</span></div>
+  <div style="font:600 30px Fredoka;margin-top:12px">${l[0]}</div>
+  <div style="font:700 17px Nunito;color:var(--muted);margin-top:2px">${l[1]}</div>
+  <div style="position:absolute;left:8px;bottom:10px">${scene({w:250,h:140,s:1.85,ox:112,oy:126,kx:0.5,ky:0.28,parts:temple({stage:l[3],sel:['g3','col','trab','fr'][i]})})}</div></div>`;
+ if(i<3) cards+=`<svg class="abs" style="left:${x+268}px;top:338px" width="24" height="36"><path d="M5 4 L19 18 L5 32" fill="none" stroke="#1C2840" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+});
+S('grid',head({tags:[['Missione Segesta'],['Algoritmo','lvl']],title:'Il piano di costruzione',sub:'Un <b style="color:var(--ink)">algoritmo</b> è una sequenza ordinata di istruzioni. Costruiremo il tempio in 4 livelli, come in un videogioco.',prog:T0})+cards+
+q(60,548,780,'Domanda','Perché conviene decidere l’ordine prima di costruire? Prova a immaginare di mettere il frontone per primo…'));
+}
+
+/* ================= 5 · LA PLANCIA DI CODEBLOCKS ================= */
+{
+const cats=[['Forme',COL.forme],['Modifica',COL.modifica],['Controlla',COL.controlla],['Matematica',COL.matematica],['Variabili',COL.variabili],['Modelli',COL.modelli],['Revisione',COL.revisione]];
+const rail=cats.map((c,i)=>`<div style="height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;${i===0?'background:#EEF1F6':''}"><span style="width:20px;height:20px;border-radius:50%;background:${c[1]}"></span><span style="font:700 11.5px Nunito;color:#3A4357">${c[0]}</span></div>`).join('');
+const palb=[['cubo','Cubo'],['cilindro','Cilindro'],['sfera','Sfera'],['tetto','Tetto'],['cono','Cono']].map(b=>`<div class="blk forme notab" style="height:38px;font-size:16px;width:132px;margin-bottom:10px">${icon(b[0])} ${b[1]}</div>`).join('');
+const vw=viewer({w:300,h:250,s:1.55,ox:150,oy:186,xr:80,yr:50,parts:temple({stage:1,sel:'g3'}),plabel:false});
+S('grid',head({tags:[['Missione Segesta'],['Istruzioni','lvl']],title:'La plancia di Codeblocks',sub:'Prima di partire, impara dove si trovano i comandi.',prog:T0})+`
+<div class="abs" style="left:60px;top:190px;width:820px;height:470px;border-radius:16px;overflow:hidden;border:2px solid #C5D0DF;box-shadow:0 8px 0 rgba(28,40,64,.1);display:flex">
+  <div style="width:76px;background:#fff;border-right:1px solid #DDE3EC;padding-top:12px">${rail}</div>
+  <div style="width:168px;background:var(--pal);padding:14px 14px;--dent:var(--pal)"><div style="font:800 17px Nunito;color:#fff;margin-bottom:12px">Forme</div>${palb}</div>
+  <div style="position:relative;flex:1;background:var(--ws)">
+    <div class="abs" style="left:14px;top:12px;display:flex;gap:6px">${rbtn('undo')}${rbtn('redo')}</div>
+    <div class="abs" style="right:12px;top:12px">${vw}</div>
+    <div class="abs" style="left:14px;top:300px;display:flex;flex-direction:column;gap:6px">${rbtn('plus')}${rbtn('minus')}${rbtn('eq')}</div>
+    <div class="abs" style="left:66px;top:278px;transform:scale(.78);transform-origin:0 0"><div class="stack">${add('cubo',box(24,96,3))}${move(0,0,'8,5')}</div></div>
+    <div class="abs" style="left:150px;top:404px;display:flex;gap:10px">${ctrl('step')}${ctrl('play')}${ctrl('fast')}${ctrl('reset')}</div>
+  </div>
+</div>
+<span class="num abs" style="left:42px;top:204px">1</span>
+<span class="num abs" style="left:286px;top:246px">2</span>
+<span class="num abs" style="left:312px;top:452px">3</span>
+<span class="num abs" style="left:540px;top:204px">4</span>
+<span class="num abs" style="left:420px;top:620px">5</span>
+<div class="abs" style="left:910px;top:186px;width:320px;display:flex;flex-direction:column;gap:13px;font:700 17px/1.32 Nunito;color:var(--muted)">
+  <div class="row" style="align-items:flex-start;gap:12px"><span class="num" style="flex:none">1</span><div><b style="color:var(--ink);font-weight:900">Categorie.</b> Ogni colore è una famiglia di blocchi: Forme, Modifica, Controlla…</div></div>
+  <div class="row" style="align-items:flex-start;gap:12px"><span class="num" style="flex:none">2</span><div><b style="color:var(--ink);font-weight:900">Blocchi.</b> Trascinali nell’area del programma.</div></div>
+  <div class="row" style="align-items:flex-start;gap:12px"><span class="num" style="flex:none">3</span><div><b style="color:var(--ink);font-weight:900">Programma.</b> I blocchi si agganciano e vengono eseguiti dall’alto in basso.</div></div>
+  <div class="row" style="align-items:flex-start;gap:12px"><span class="num" style="flex:none">4</span><div><b style="color:var(--ink);font-weight:900">Anteprima 3D.</b> Qui il tempio cresce. Con il cubo cambi il punto di vista.</div></div>
+  <div class="row" style="align-items:flex-start;gap:12px"><span class="num" style="flex:none">5</span><div><b style="color:var(--ink);font-weight:900">Comandi.</b> Un blocco alla volta, Play/Pausa, veloce, ricomincia.</div></div>
+</div>
+`);
+}
+
+/* ================= 6 · X Y Z ================= */
+{
+const ax=[['X','#D93A2B','Larghezza','da sinistra a destra'],['Y','#2E9E4F','Profondità','avanti e indietro'],['Z','#2F6FD6','Altezza','in basso e in alto']];
+S('grid',head({tags:[['Missione Segesta'],['Coordinate','lvl']],title:'Dove va ogni forma? X, Y, Z',sub:'Le coordinate dicono dove mettere una forma. Il piano di lavoro si trova all’altezza Z = 0.',prog:T0})+`
+<div class="abs" style="left:60px;top:206px;display:flex;flex-direction:column;gap:16px">
+${ax.map(a=>`<div class="card" style="position:relative;width:440px;height:92px;padding:0 22px;display:flex;align-items:center;gap:18px"><span class="axis" style="width:58px;height:58px;font-size:32px;background:${a[1]}">${a[0]}</span><div><div style="font:600 28px Fredoka;color:${a[1]}">${a[2]}</div><div style="font:700 18px Nunito;color:var(--muted)">${a[3]}</div></div></div>`).join('')}
+</div>
+<div class="abs" style="left:540px;top:196px">${viewer({w:680,h:420,s:3.1,ox:320,oy:330,xr:100,yr:58,parts:temple({stage:4}),axes:[80,66,92]})}</div>
+${q(60,546,440,'Domanda','Una colonna sale verso l’alto: quale coordinata cambia?')}
+`);
+}
+
+/* ================= 7 · VARIABILI ================= */
+{
+const s=7,bx=150,by=350;
+const c1=bx,c2=bx+16*s;
+const dg=`<svg width="600" height="370" viewBox="0 0 600 370" font-family="Fredoka" font-weight="600">
+ <line x1="40" y1="${by}" x2="330" y2="${by}" stroke="#B9C6D8" stroke-width="3"/>
+ ${[c1,c2].map(c=>`<rect x="${c-4*s}" y="${by-30*s}" width="${8*s}" height="${30*s}" fill="#DCC49A" stroke="#7E6040" stroke-width="2"/><ellipse cx="${c}" cy="${by-30*s}" rx="${4*s}" ry="7" fill="#EFE0BF" stroke="#7E6040" stroke-width="2"/><line x1="${c}" y1="${by-30*s-30}" x2="${c}" y2="${by+12}" stroke="#1C2840" stroke-width="1.5" stroke-dasharray="5 5"/>`).join('')}
+ <g stroke="#3FA7D6" stroke-width="3" fill="#3FA7D6">
+  <line x1="${c1}" y1="${by-30*s-46}" x2="${c2}" y2="${by-30*s-46}"/><polygon points="${c1},${by-30*s-46} ${c1+12},${by-30*s-52} ${c1+12},${by-30*s-40}"/><polygon points="${c2},${by-30*s-46} ${c2-12},${by-30*s-52} ${c2-12},${by-30*s-40}"/>
+  <line x1="${c2+4*s+26}" y1="${by}" x2="${c2+4*s+26}" y2="${by-30*s}"/><polygon points="${c2+4*s+26},${by-30*s} ${c2+4*s+20},${by-30*s+12} ${c2+4*s+32},${by-30*s+12}"/><polygon points="${c2+4*s+26},${by} ${c2+4*s+20},${by-12} ${c2+4*s+32},${by-12}"/>
+ </g>
+ <text x="${(c1+c2)/2}" y="${by-30*s-60}" text-anchor="middle" font-size="26" fill="#1C2840">P = 16 mm</text>
+ <text x="${c2+4*s+40}" y="${by-15*s+8}" font-size="26" fill="#1C2840">H = 30 mm</text>
+ <g transform="translate(500,92)"><circle r="72" fill="#EFE0BF" stroke="#7E6040" stroke-width="2.5"/><line x1="-72" y1="0" x2="72" y2="0" stroke="#1C2840" stroke-width="2" stroke-dasharray="6 5"/><line x1="0" y1="0" x2="0" y2="-72" stroke="#3FA7D6" stroke-width="4"/><circle r="5" fill="#1C2840"/>
+ <text x="-10" y="-26" text-anchor="end" font-size="24" fill="#1C2840">R = 4</text><text x="0" y="104" text-anchor="middle" font-size="22" fill="#1C2840">vista dall’alto</text><text x="0" y="26" text-anchor="middle" font-size="19" fill="#5A6377">diametro 8 mm</text></g>
+</svg>`;
+S('grid',head({tags:[['Missione Segesta'],['Variabili','lvl']],title:'Le variabili: i telecomandi del tempio',sub:'Una variabile è una scatola con un nome che conserva un valore. Cambia il valore e cambia il tempio!',prog:T0})+`
+<div class="ws" style="left:60px;top:202px;width:540px">
+  <div class="wsl"><i style="background:var(--variabili)"></i>Variabili</div>
+  <div class="stack">
+   ${ann(setv('N',6),'numero di colonne')}
+   ${ann(setv('P',16),'passo fra i centri (mm)')}
+   ${ann(setv('R',4),'raggio del fusto (mm)')}
+   ${ann(setv('H',30),'altezza del fusto (mm)')}
+  </div>
+</div>
+<div class="abs" style="left:630px;top:190px">${dg}</div>
+${tip(60,476,540,'Trucco','Il diametro è il doppio del raggio: 2 × 4 = 8 mm.')}
+${q(60,576,1160,'Sfida','Con N = 6 e P = 16, quanti millimetri ci sono fra il centro della prima colonna e quello dell’ultima?')}
+`);
+}
+
+/* ================= 8 · LIVELLO 1 · GRADINI ================= */
+{
+const sc=(after)=>{const s=11,w=150,h=4*s,base=112,cx=105;const top=after?base-h:base-h/2;
+ let g=`<svg width="240" height="190" viewBox="0 0 240 190" font-family="Fredoka" font-weight="600">`;
+ g+=`<rect x="0" y="${base}" width="240" height="70" fill="#EAF3FD"/><line x1="0" y1="${base}" x2="240" y2="${base}" stroke="#8FC0EE" stroke-width="3"/>`;
+ g+=`<rect x="${cx-w/2}" y="${top}" width="${w}" height="${h}" fill="#DCC49A" stroke="${after?'#12B5E5':'#7E6040'}" stroke-width="${after?3:2}"/>`;
+ if(!after) g+=`<rect x="${cx-w/2}" y="${base}" width="${w}" height="${h/2}" fill="#fff" fill-opacity=".6"/><rect x="${cx-w/2}" y="${base}" width="${w}" height="${h/2}" fill="none" stroke="#7E6040" stroke-width="2" stroke-dasharray="6 5"/>`;
+ const cy=after?base-h/2:base;
+ g+=`<circle cx="${cx}" cy="${cy}" r="7" fill="#1C2840" stroke="#fff" stroke-width="2"/>`;
+ g+=`<text x="${cx}" y="${top-14}" text-anchor="middle" font-size="19" fill="#1C2840">${after?'centro a Z = 2':'centro in (0, 0, 0)'}</text>`;
+ if(after){g+=`<text x="${cx+w/2+8}" y="${base-h+6}" font-size="17" fill="#5A6377">Z = 4</text><text x="${cx+w/2+8}" y="${base+6}" font-size="17" fill="#5A6377">Z = 0</text>`}
+ else{g+=`<text x="${cx}" y="${base+h/2+30}" text-anchor="middle" font-size="17" fill="#5A6377">metà è sotto il piano!</text>`}
+ g+=`</svg>`;return g};
+S('grid',head({tags:[['Missione Segesta'],['Livello 1','lvl']],title:'Livello 1 · I tre gradini',sub:'Ogni forma nasce con il centro nel punto (0, 0, 0). Aggiungi il gradino, poi spostalo all’altezza giusta.',subw:1000,prog:['now','todo','todo','todo']})+`
+<div class="ws" style="left:60px;top:208px;width:600px">
+  <div class="wsl"><i style="background:var(--forme)"></i>Programma · crepidoma</div>
+  <div class="stack">
+   ${add('cubo',box(40,112,4))}${move(0,0,2)}
+   ${add('cubo',box(32,104,3))}${move(0,0,'5,5')}
+   ${add('cubo',box(24,96,3))}${move(0,0,'8,5')}
+  </div>
+</div>
+<div class="card" style="left:690px;top:208px;width:530px;height:262px;padding:16px 18px;overflow:hidden">
+  <div class="row" style="justify-content:space-between;padding:0 8px"><span class="lbl">1 · Appena aggiunto</span><span class="lbl">2 · Dopo “Sposta Z 2”</span></div>
+  <div class="row" style="gap:14px;margin-top:14px;margin-left:-2px">${sc(false)}${sc(true)}</div>
+</div>
+${q(690,496,530,'Domanda','Il gradino è alto 4 mm: perché il suo centro va a Z = 2?')}
+${tip(60,580,600,'Attenzione','Nel blocco Cubo: L = larghezza, P = profondità, A = altezza.')}
+`);
+}
+
+/* ================= 9 · UNA COLONNA COMPLETA ================= */
+{
+const v={s:4.6,ox:0,oy:0,kx:0.5,ky:0.3};
+const ex=`<svg width="480" height="400" viewBox="0 0 480 400" font-family="Fredoka" font-weight="600">
+${(()=>{let g='';
+ g+=drawCyl({c:[0,0],r:4,z1:0,z2:30},{...v,ox:90,oy:362});
+ g+=drawCyl({c:[0,0],r:5.5,z1:0,z2:2},{...v,ox:90,oy:196});
+ g+=drawBox({c:[0,0,1],d:[12,12,2]},{...v,ox:90,oy:150});
+ const L=(x1,y1,x2,y2,t)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#1C2840" stroke-width="2"/><circle cx="${x1}" cy="${y1}" r="3.5" fill="#1C2840"/><text x="${x2+8}" y="${y2+9}" font-size="26" fill="#1C2840">${t}</text>`;
+ g+=L(140,138,178,128,'Abaco')+L(118,186,178,190,'Echino')+L(110,290,178,290,'Fusto');
+ const vf={...v,ox:380,oy:362};g+=drawCyl({c:[0,0],r:4,z1:0,z2:30},vf)+drawCyl({c:[0,0],r:5.5,z1:30,z2:32},vf)+drawBox({c:[0,0,33],d:[12,12,2]},vf);
+ g+=`<path d="M236 352 C 262 330, 300 330, 326 346" fill="none" stroke="#12B5E5" stroke-width="4" stroke-linecap="round"/><polygon points="334,353 316,350 327,336" fill="#12B5E5"/>`;
+ g+=`<text x="96" y="394" text-anchor="middle" font-size="18" fill="#5A6377">parti separate</text><text x="386" y="394" text-anchor="middle" font-size="18" fill="#5A6377">colonna completa</text>`;
+ return g})()}
+</svg>`;
+S('grid',head({tags:[['Missione Segesta'],['Livello 2 · prova','lvl']],title:'Una colonna completa',sub:'Il capitello è fatto di echino e abaco. Ogni parte si aggiunge e poi si sposta sopra il fusto.',prog:['done','now','todo','todo']})+`
+<div class="ws" style="left:60px;top:200px;width:640px">
+  <div class="wsl"><i style="background:var(--forme)"></i>Programma · una colonna</div>
+  <div class="stack">
+   ${ann(add('cilindro',cyl(4,30)),'fusto')}${move(0,0,25)}
+   ${ann(add('cilindro',cyl('?','?')),'echino')}${move(0,0,'?')}
+   ${ann(add('cubo',box('?','?','?')),'abaco')}${move(0,0,'?')}
+  </div>
+</div>
+${tip(730,200,490,'Trucco','“Sposta” agisce sempre sulla forma appena aggiunta.')}
+<div class="abs" style="left:740px;top:262px">${ex}</div>
+${q(60,556,640,'Sfida','Il fusto finisce a Z = 40. Se l’echino è alto 2 mm, dove va il suo centro?')}
+`);
+}
+
+/* ================= 10 · IL CICLO ================= */
+{
+const xs=[-40,-24,-8,8,24,40];
+const extra=(v)=>xs.map((x,i)=>{const b=P(x,-20,0,v),t=P(x,0,58,v);return `<text x="${b[0]}" y="${b[1]+26}" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="17" fill="#D93A2B">${x}</text><circle cx="${t[0]}" cy="${t[1]-6}" r="12" fill="#EF9A2A"/><text x="${t[0]}" y="${t[1]-0.5}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="15" fill="#fff">${i+1}</text>`}).join('');
+S('grid',head({tags:[['Missione Segesta'],['Livello 2','lvl']],title:'Livello 2 · Il ciclo delle sei colonne',sub:'Un ciclo ripete i blocchi che ha dentro: a ogni giro costruisce una colonna e sposta X di un passo.',subw:1010,prog:['done','now','todo','todo']})+`
+<div class="ws" style="left:60px;top:196px;width:640px">
+  <div class="wsl"><i style="background:var(--controlla)"></i>Programma · colonnato</div>
+  <div class="stack">
+   ${setv('X','−40')}
+   ${rep(vr('N'),add('cilindro',cyl(vr('R'),vr('H')))+move(vr('X'),0,mr(chip(10)+'+'+vr('H')+'÷'+chip(2)))+`<div class="ph">+ echino e abaco: aggiungi e sposta</div>`+chg('X',vr('P'),{sel:true}))}
+  </div>
+</div>
+<div class="abs" style="left:730px;top:196px">${viewer({w:490,h:290,s:2.95,ox:236,oy:232,xr:76,yr:46,parts:temple({stage:2,sel:'col',selIdx:5}),extra,plabel:false})}</div>
+<div class="card" style="left:730px;top:504px;width:490px;height:76px;padding:0 22px;display:flex;align-items:center;gap:18px">
+  <div style="font:700 17px/1.2 Nunito;color:var(--muted)">Senza ciclo<br><b style="font:600 30px Fredoka;color:#D2462E">36 blocchi</b></div>
+  <svg width="40" height="24"><path d="M2 12 H32 M24 4 L34 12 L24 20" fill="none" stroke="#1C2840" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div style="font:700 17px/1.2 Nunito;color:var(--muted)">Con “ripeti”<br><b style="font:600 30px Fredoka;color:#2E8B57">9 blocchi</b></div>
+</div>
+${tip(730,598,490,'Trucco','“cambia X di P” sta DENTRO ripeti, alla fine.')}
+`);
+}
+
+/* ================= 11 · TRABEAZIONE E FRONTONE ================= */
+{
+const sv=`<svg width="520" height="150" viewBox="0 0 520 150" font-family="Fredoka" font-weight="600">
+ <path d="M20 112 L54 78 L88 112Z" fill="#9CD69E" stroke="#2E7D32" stroke-width="2"/>
+ <text x="54" y="138" text-anchor="middle" font-size="16" fill="#5A6377">prima</text>
+ <path d="M112 95 H150 M140 85 L152 95 L140 105" fill="none" stroke="#1C2840" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+ <path d="M170 112 L340 71 L510 112Z" fill="#9CD69E" stroke="#12B5E5" stroke-width="3"/>
+ <text x="340" y="138" text-anchor="middle" font-size="16" fill="#5A6377">dopo: X × 5, Z × 1,2</text>
+ <text x="20" y="28" font-size="22" fill="#1C2840">1 = la misura resta uguale</text>
+ <text x="20" y="56" font-size="22" fill="#1C2840">5 = diventa 5 volte più grande</text>
+</svg>`;
+S('grid',head({tags:[['Missione Segesta'],['Livelli 3 e 4','lvl']],title:'Trabeazione e frontone',sub:'La trabeazione unisce le colonne. Il frontone è un prisma triangolare: il blocco Tetto.',prog:['done','done','now','now']})+`
+<div class="ws" style="left:60px;top:196px;width:620px">
+  <div class="cmt">Livello 3 · trabeazione</div>
+  <div class="stack">${add('cubo',box('?','?','?'))}${move(0,0,'?')}</div>
+  <div class="cmt" style="margin-top:22px">Livello 4 · frontone</div>
+  <div class="stack">
+   <div class="blk forme">Aggiungi ${icon('tetto')}${opts} lunghezza ${chip(12)}</div>
+   ${scale(5,1,'1,2')}${move(0,0,60)}
+  </div>
+</div>
+${q(60,556,620,'Sfida','Quanto deve essere larga la trabeazione per coprire tutte le colonne? Indizio: i centri vanno da −40 a 40, il raggio è 4 mm.')}
+<div class="card" style="left:710px;top:196px;width:510px;height:170px;padding:8px 0 0 0;overflow:hidden">${sv}</div>
+${tip(710,382,510,'Regola','Prima Scala, poi Sposta.')}
+<div class="abs" style="left:710px;top:468px">${viewer({w:510,h:224,s:2.2,ox:240,oy:190,xr:74,yr:44,parts:temple({stage:4,sel:'fr'}),cube:false,plabel:false,btns:false})}</div>
+`);
+}
+
+/* ================= 12 · CACCIA AL BUG ================= */
+{
+const cl=[['step','Un blocco alla volta'],['play','Play / Pausa'],['fast','Veloce'],['reset','Ricomincia']];
+const bugCard=(x,title,parts,fixHtml)=>`<div class="card" style="left:${x}px;top:306px;width:570px;height:360px;padding:18px 22px">
+  <div class="row" style="gap:14px">${BUG()}<div style="font:600 27px Fredoka">${title}</div></div>
+  <div style="margin:10px 0 0 -4px">${viewer({w:530,h:200,s:2.15,ox:262,oy:168,xr:80,yr:40,parts,cube:false,btns:false,plabel:false})}</div>
+  <div class="row" style="gap:10px;margin-top:14px;font:800 19px Nunito;--dent:#fff">Controlla:&nbsp;${fixHtml}</div></div>`;
+S('grid',head({tags:[['Missione Segesta'],['Debug','lvl']],title:'Caccia al bug',sub:'Prima prevedi, poi premi Play. Se il risultato è diverso, cerca il primo blocco sbagliato.',prog:['done','done','done','done']})+`
+<div class="card" style="left:60px;top:196px;width:1160px;height:86px;padding:0 26px;display:flex;align-items:center;justify-content:space-between;background:#3B4357;border-color:#3B4357">
+ ${cl.map(c=>`<div class="row" style="gap:12px">${ctrl(c[0],50)}<span style="font:800 19px Nunito;color:#fff">${c[1]}</span></div>`).join('')}
+</div>
+${bugCard(60,'Colonne tutte nello stesso punto',temple({stage:2,same:true,cols:6}),`<div class="blk variabili notab" style="height:40px">cambia ${dd('X')} di ${vr('P')}</div><span style="font:700 17px Nunito;color:var(--muted)">è dentro ripeti?</span>`)}
+${bugCard(650,'Fusti sospesi in aria',temple({stage:2,lift:15}),`<span style="font:700 17px Nunito;color:var(--muted)">la Z deve essere</span> ${mr(chip(10)+'<span style="color:#fff">+</span>'+vr('H')+'<span style="color:#fff">÷</span>'+chip(2))}`)}
+`);
+}
+
+/* ================= 13 · IL POTERE DI UNA VARIABILE ================= */
+{
+const dim=(v,H)=>{const a=P(56,20,0,v),b=P(56,20,H+36,v);return `<g stroke="#1C2840" stroke-width="2"><line x1="${a[0]+26}" y1="${a[1]}" x2="${b[0]+26}" y2="${b[1]}"/><line x1="${a[0]+18}" y1="${a[1]}" x2="${a[0]+34}" y2="${a[1]}"/><line x1="${b[0]+18}" y1="${b[1]}" x2="${b[0]+34}" y2="${b[1]}"/></g><text x="${a[0]+40}" y="${(a[1]+b[1])/2+9}" font-family="Fredoka" font-weight="600" font-size="26" fill="${H===40?'#1F86B8':'#1C2840'}">${H+36} mm</text>`};
+const blue={front:'#7CC6EA',top:'#B9E2F5',side:'#4FA6D0'};
+S('grid',head({tags:[['Missione Segesta'],['Bonus','lvl']],title:'Il potere di una variabile',sub:'Cambia solo H: il fusto si allunga e tutte le parti sopra salgono da sole.',prog:['done','done','done','done']})+`
+<div class="abs" style="left:60px;top:196px;display:flex;align-items:center;gap:22px;--dent:#fff">
+ <div class="blk variabili notab">imposta ${dd('H')} a ${chip(30)}</div>
+ <svg width="56" height="28"><path d="M2 14 H46 M36 4 L48 14 L36 24" fill="none" stroke="#1C2840" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+ <div class="blk variabili notab sel">imposta ${dd('H')} a ${chip(40)}</div>
+</div>
+<div class="abs" style="left:30px;top:260px">${scene({w:610,h:370,s:3.3,ox:236,oy:330,parts:temple({stage:4,H:30}),extra:v=>dim(v,30)})}</div>
+<div class="abs" style="left:630px;top:260px">${scene({w:610,h:370,s:3.3,ox:236,oy:330,parts:temple({stage:4,H:40,colCol:blue}),extra:v=>dim(v,40)})}</div>
+<div class="abs" style="left:130px;top:612px;font:600 26px Fredoka;color:#1C2840">H = 30 mm</div>
+<div class="abs" style="left:730px;top:612px;font:600 26px Fredoka;color:#1F86B8">H = 40 mm</div>
+${q(860,196,360,'Prevedi','Con H = 50, quanto sarà alto il tempio?')}
+`);
+}
+
+/* ================= 14 · SFIDA DI SQUADRA ================= */
+{
+const roleIco={
+ pil:`<svg width="58" height="58" viewBox="0 0 58 58"><circle cx="29" cy="29" r="29" fill="#4A86E8"/><rect x="13" y="16" width="32" height="21" rx="3" fill="#fff"/><rect x="24" y="37" width="10" height="5" fill="#fff"/><rect x="19" y="42" width="20" height="3" rx="1.5" fill="#fff"/><path d="M22 27 L27 31 L36 22" fill="none" stroke="#4A86E8" stroke-width="3" stroke-linecap="round"/></svg>`,
+ con:`<svg width="58" height="58" viewBox="0 0 58 58"><circle cx="29" cy="29" r="29" fill="#EF9A2A"/><circle cx="25" cy="25" r="10" fill="none" stroke="#fff" stroke-width="4"/><path d="M32 32 L42 42" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>`,
+ rep:`<svg width="58" height="58" viewBox="0 0 58 58"><circle cx="29" cy="29" r="29" fill="#9966E0"/><rect x="13" y="20" width="32" height="22" rx="4" fill="#fff"/><rect x="22" y="15" width="12" height="6" rx="2" fill="#fff"/><circle cx="29" cy="31" r="6.5" fill="#9966E0"/><circle cx="29" cy="31" r="3" fill="#fff"/></svg>`};
+const roles=[['pil','Pilota','Inserisce i blocchi e preme Play.'],['con','Controllore','Confronta blocchi, valori e modello.'],['rep','Reporter','Salva un’immagine e spiega la modifica.']];
+const cyc=`<svg width="560" height="236" viewBox="0 0 560 236" font-family="Fredoka" font-weight="600">
+ ${[['Prevedi','#FFD447','#1C2840',90],['Esegui','#4A86E8','#fff',280],['Confronta','#43A047','#fff',470]].map(c=>`<circle cx="${c[3]}" cy="92" r="72" fill="${c[1]}"/><text x="${c[3]}" y="101" text-anchor="middle" font-size="27" fill="${c[2]}">${c[0]}</text>`).join('')}
+ <path d="M166 92 H196 M186 82 L198 92 L186 102" fill="none" stroke="#1C2840" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+ <path d="M356 92 H386 M376 82 L388 92 L376 102" fill="none" stroke="#1C2840" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+ <path d="M470 168 C 420 214, 140 214, 90 168" fill="none" stroke="#1C2840" stroke-width="3" stroke-dasharray="7 6"/><polygon points="84,160 98,166 86,176" fill="#1C2840"/>
+ <text x="280" y="230" text-anchor="middle" font-size="18" fill="#5A6377" font-family="Nunito" font-weight="800">Non torna? Correggi e riprova!</text>
+</svg>`;
+const stars=n=>Array.from({length:3},(_,i)=>`<svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 1.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8z" fill="${i<n?'#FFC21A':'#E1E6EE'}"/></svg>`).join('');
+const bonus=[[1,'H = 40: prevedi la nuova altezza del tempio.'],[2,'N = 8: le colonne stanno ancora sul gradino? Da quale X devi partire?'],[3,'P = 6: che cosa succede alle colonne? Perché?']];
+S('grid',head({tags:[['Missione Segesta'],['Sfida finale','lvl']],title:'Sfida di squadra',sub:'Modifica una variabile. Prevedi il risultato, esegui il programma e confronta.',prog:['done','done','done','done']})+`
+<div class="abs" style="left:60px;top:200px;display:flex;flex-direction:column;gap:14px">
+ ${roles.map(r=>`<div class="card" style="position:relative;width:520px;height:96px;padding:0 20px;display:flex;align-items:center;gap:18px">${roleIco[r[0]]}<div><div style="font:600 27px Fredoka">${r[1]}</div><div style="font:700 18px Nunito;color:var(--muted)">${r[2]}</div></div></div>`).join('')}
+</div>
+<div class="abs" style="left:60px;top:534px;background:var(--ink);color:#fff;border-radius:999px;padding:10px 22px;font:800 18px Nunito">Ogni 15 minuti si cambia ruolo!</div>
+<div class="abs" style="left:640px;top:188px">${cyc}</div>
+<div class="card" style="left:640px;top:446px;width:580px;height:196px;padding:16px 22px">
+ <div class="lbl" style="margin-bottom:10px">Missioni bonus</div>
+ ${bonus.map(b=>`<div class="row" style="gap:14px;margin-bottom:10px;align-items:flex-start"><span style="display:inline-flex;gap:1px;flex:none;margin-top:3px">${stars(b[0])}</span><span style="font:700 19px/1.3 Nunito">${b[1]}</span></div>`).join('')}
+</div>
+`);
+}
+
+/* ================= 15 · EXIT TICKET ================= */
+{
+const tk=[['1','A cosa serve “ripeti”?',COL.controlla],['2','Quale errore hai corretto?','#D2462E'],['3','Che cosa è cambiato modificando una variabile?',COL.variabili]];
+S('dark',`
+<div class="tags"><span class="tag lvl">Missione compiuta!</span></div>
+<div class="abs" style="left:60px;top:76px;font:600 54px Fredoka;color:#fff">Il tuo exit ticket</div>
+<div class="abs" style="left:62px;top:150px;width:980px;font:700 22px/1.4 Nunito;color:#C9D3E6">Rispondi come preferisci: scrivendo, parlando, disegnando o mostrando il progetto. Usa un esempio del lavoro che hai fatto.</div>
+${tk.map((t,i)=>{const x=60+i*395;return `<div class="abs" style="left:${x}px;top:250px;width:370px;height:366px;background:#fff;border-radius:22px;color:var(--ink);padding:26px 28px;overflow:hidden">
+ <div style="position:absolute;left:-18px;top:220px;width:36px;height:36px;border-radius:50%;background:#1C2840"></div>
+ <div style="position:absolute;right:-18px;top:220px;width:36px;height:36px;border-radius:50%;background:#1C2840"></div>
+ <div style="position:absolute;left:30px;right:30px;top:238px;border-top:3px dashed #D5DCE6"></div>
+ <div style="display:flex;align-items:center;gap:14px"><span style="display:inline-flex;width:58px;height:58px;border-radius:16px;background:${t[2]};color:#fff;font:700 34px/58px Fredoka;justify-content:center">${t[0]}</span><span class="lbl">Domanda ${t[0]}</span></div>
+ <div style="font:600 27px/1.2 Fredoka;margin-top:20px">${t[1]}</div>
+ <div style="position:absolute;left:28px;right:28px;bottom:22px;height:96px;border-radius:12px;background:repeating-linear-gradient(#fff 0 30px,#E4E9F1 30px 32px)"></div>
+</div>`}).join('')}
+<div class="abs" style="left:62px;top:648px;font:700 18px Nunito;color:#8E9AB3">EU Code Week 2026 · I.C. “Francesco Vivona” · Calatafimi Segesta</div>
+`);
+}
+
+document.getElementById('deck').innerHTML=slides.join('');
+</script>
+<style media="screen">
+body{padding:24px 0}
+.slide{margin:0 auto 24px;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+</style>
+<script>
+(function(){
+  function fit(){ var w=window.innerWidth; document.body.style.zoom = w<1100 ? String(Math.max(.2,(w-16)/1280)) : ''; }
+  window.addEventListener('resize',fit); window.addEventListener('load',fit);
+  window.addEventListener('beforeprint',function(){ document.body.style.zoom=''; });
+})();
+</script>
+</body>
+</html>
