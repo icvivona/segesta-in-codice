@@ -18,7 +18,7 @@ Le presentazioni hanno 15 slide, con la stessa struttura in italiano e in ingles
 
 ### Come si guardano
 
-- **Online:** [NOMEUTENTE].github.io/segesta-in-codice (dopo la pubblicazione con GitHub Pages).
+- **Online:** liviodifranco-source.github.io/segesta-in-codice (dopo la pubblicazione con GitHub Pages).
 - **Sul computer:** scarica la cartella e apri `index.html` o una delle presentazioni con Chrome, Edge o Firefox.
 - **In PDF:** i PDF di ogni versione sono allegati alla pagina *Releases* del repository.
 
@@ -64,7 +64,7 @@ Il repository contiene solo materiali didattici: nessun dato, nome o immagine di
 
 ### Contatti
 
-prof. Livio Di Franco, Animatore Digitale, IC "Francesco Vivona", Calatafimi Segesta (TP) · [EMAIL-REFERENTE]
+prof. Livio Di Franco, Animatore Digitale, IC "Francesco Vivona", Calatafimi Segesta (TP) · difranco.livio@istitutocomprensivovivona.edu.it
 
 ---
 
